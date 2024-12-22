@@ -1,0 +1,21 @@
+.donaters {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 1.5rem;
+
+    img {
+      width: 65px;
+      height: 65px;
+      border-radius: 50%;
+      border: 2px solid #141a29;
+      transition: all 0.2s;
+      + img {
+        margin-left: 10px;
+      }
+    }
+    
+    img:hover {
+      transform: scale(1.2);
+    }
+}
