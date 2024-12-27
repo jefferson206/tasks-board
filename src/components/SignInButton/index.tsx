@@ -18,7 +18,7 @@ export function SignInButton() {
             className={styles.signInButton}
             onClick={() => signOut()}
         >
-            <img src="https://sujeitoprogramador.com/steve.png" alt="Foto do usuario"/>
+            <img src={session.user?.image ?? ''} alt="Foto do usuario"/>
             Hello, {session.user?.name || "User"}
             <FiX color="#737380" className={styles.closeIcon}/>
         </button>
