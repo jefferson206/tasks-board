@@ -1,11 +1,57 @@
-import { FiCalendar, FiClock, FiEdit, FiEdit2, FiPlus, FiTrash } from 'react-icons/fi'
+import { FiCalendar, FiClock, FiEdit2, FiPlus, FiTrash } from 'react-icons/fi'
 import styles from './styles.module.scss'
 import Head from 'next/head'
 import SupportButton from '@/components/SupportButton'
 import { GetServerSideProps } from 'next'
 import { getSession } from 'next-auth/react'
+import { FormEvent, useState } from 'react'
+import firebase_app from '../../services/firebaseConnection'
+import { addDoc, collection, getFirestore } from 'firebase/firestore'
+import useAddData from '@/hooks/firebase/useAddData'
 
-export default function Board() {
+interface BoardProps {
+    user: {
+        id: string
+        name: string
+    }
+}
+
+export default function Board({ user }: BoardProps) {
+    const [input, setInput] = useState('')
+
+    async function handleAddTask(e: FormEvent) {
+        e.preventDefault()
+        if (input === '') return
+        const db = getFirestore(firebase_app)
+
+        await addDoc(collection(db, 'task'), {
+            created: new Date(), 
+            task: input,
+            userId: user.id,
+            name: user.name
+        }).then((doc) => {
+            console.log('done')
+        }).catch((err) => {
+            console.log('error')
+        })
+        
+        // const handleSave = async () => {
+        //     const data = {
+        //         created: new Date(), 
+        //         task: input,
+        //         userId: user.id,
+        //         name: user.name
+        //     }
+        //     const { result, error } = await useAddData({ collection: 'tasks', id: input, data: data })
+        
+        //     console.log('result', result)
+        //     if (error) {
+        //       return console.log(error)
+        //     }
+        // }
+
+        // handleSave()
+    }
 
     return (
         <>
@@ -13,10 +59,12 @@ export default function Board() {
                 <title>Minhas tarefas - Board</title>
             </Head>
             <main className={styles.container}>
-                <form>
+                <form onSubmit={handleAddTask}>
                     <input 
                         type='text'
                         placeholder='Digite sua tarefa...'
+                        value={input}
+                        onChange={(e) => setInput(e.target.value)}
                     />
                     <button type='submit'>
                         <FiPlus size={25} color='#17181f'/>
@@ -74,9 +122,14 @@ export const getServerSideProps: GetServerSideProps = async ({ req }) => {
         }
     }
 
+    const user = {
+        name: session?.user?.name,
+        id: (session as any)?.id
+    }
+
     return {
         props: {
-
+            user
         }
     }
 }
