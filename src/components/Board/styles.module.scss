@@ -1,0 +1,24 @@
+.form {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    input {
+        width: 90%;
+        height: 50px;
+        background-color: #20212c;
+        border: 1px solid #424242;
+        border-radius: 6px;
+        padding: 3px 10px;
+        color: #fff;
+    }
+
+    button {
+        margin-left: 10px;
+        width: 8%;
+        height: 50px;
+        border: 0;
+        background-color: #ffb800;
+        border-radius: 6px;
+    }
+}
