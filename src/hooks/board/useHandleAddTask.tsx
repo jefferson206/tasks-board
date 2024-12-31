@@ -1,10 +1,12 @@
 import { BoardProps } from "@/pages/board"
 import { FormEvent, useState } from "react"
 import { useAddData } from "../firebase/useAddData"
+import { formatCreatedDate } from "../utils/getFormatedDate"
 
 export function useHandleAddTask({ user }: BoardProps) {
-    const [input, setInput] = useState('')
+    const [ input, setInput ] = useState('')
     const [ loading, setLoading ] = useState(false)
+    const [ task, setTask ] = useState<any[]>([])
 
     async function handleAddTask(value: FormEvent) {
         value.preventDefault()
@@ -21,10 +23,15 @@ export function useHandleAddTask({ user }: BoardProps) {
             setLoading(loading)
 
             if(!result.success) {
-                console.log('Fail to save')
+                console.log('Fail to save', result)
                 return
             } else {
                 setInput('')
+                const data = {
+                    ...result.docData,
+                    createdFormated: formatCreatedDate(result.docData.created)
+                }
+                setTask([...task, data])
                 console.log('toast: Sucess saved')
             }
         }
@@ -36,5 +43,5 @@ export function useHandleAddTask({ user }: BoardProps) {
         setInput(event.target.value)
     }
 
-    return { input, loading, handleAddTask, handleSearchChange}    
+    return { input, loading, task, handleAddTask, handleSearchChange}    
 }

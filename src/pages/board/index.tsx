@@ -6,6 +6,7 @@ import { GetServerSideProps } from 'next'
 import { getSession } from 'next-auth/react'
 import { AddTask } from '@/components/Board/AddTask'
 import { useHandleAddTask } from '@/hooks/board/useHandleAddTask'
+import Link from 'next/link'
 
 export interface BoardProps {
     user: {
@@ -15,8 +16,8 @@ export interface BoardProps {
 }
 
 export default function Board({ user }: BoardProps) {
-    const { input, loading, handleAddTask, handleSearchChange } = useHandleAddTask({ user })
-
+    const { input, loading, task, handleAddTask, handleSearchChange } = useHandleAddTask({ user })
+    
     return (
         <>
             <Head>
@@ -28,29 +29,34 @@ export default function Board({ user }: BoardProps) {
                     onSubmit={handleAddTask}
                     onChange={handleSearchChange}
                 />
-
-                <h1>Voce tem 2 tarefas !</h1>
+                <h1>Voce tem {task.length} tarefas !</h1>
 
                 <section>
-                    <article className={styles.taskList}>
-                        <p>Aprender criar projetos usando Next JS</p>
-                        <div className={styles.actions}>
-                            <div>
-                                <div>
-                                    <FiCalendar size={20} color='#ffb800'/>
-                                    <time>22 Dezembro 2024</time>
+                    {task.map((t: any) => {
+                        return (
+                            <article className={styles.taskList}>
+                                <Link href={`/board/${t.id}`}>
+                                    <p>{t.task}</p>
+                                </Link>
+                                <div className={styles.actions}>
+                                    <div>
+                                        <div>
+                                            <FiCalendar size={20} color='#ffb800'/>
+                                            <time>{t.createdFormated}</time>
+                                        </div>
+                                        <button>
+                                            <FiEdit2 size={20} color='#fff' />
+                                            <span>Editar</span>
+                                        </button>
+                                    </div>
+                                    <button>
+                                        <FiTrash size={20} color='#FF3636' />
+                                        <span>Excluir</span>
+                                    </button>
                                 </div>
-                                <button>
-                                    <FiEdit2 size={20} color='#fff' />
-                                    <span>Editar</span>
-                                </button>
-                            </div>
-                            <button>
-                                <FiTrash size={20} color='#FF3636' />
-                                <span>Excluir</span>
-                            </button>
-                        </div>
-                    </article>
+                            </article>
+                        )
+                    })}
                 </section>
             </main>
 
