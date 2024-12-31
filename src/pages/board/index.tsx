@@ -1,11 +1,21 @@
-import { FiCalendar, FiClock, FiEdit, FiEdit2, FiPlus, FiTrash } from 'react-icons/fi'
+import { FiCalendar, FiClock, FiEdit2, FiTrash } from 'react-icons/fi'
 import styles from './styles.module.scss'
 import Head from 'next/head'
 import SupportButton from '@/components/SupportButton'
 import { GetServerSideProps } from 'next'
 import { getSession } from 'next-auth/react'
+import { AddTask } from '@/components/Board/AddTask'
+import { useHandleAddTask } from '@/hooks/board/useHandleAddTask'
 
-export default function Board() {
+export interface BoardProps {
+    user: {
+        id: string
+        name: string
+    }
+}
+
+export default function Board({ user }: BoardProps) {
+    const { input, loading, handleAddTask, handleSearchChange } = useHandleAddTask({ user })
 
     return (
         <>
@@ -13,15 +23,11 @@ export default function Board() {
                 <title>Minhas tarefas - Board</title>
             </Head>
             <main className={styles.container}>
-                <form>
-                    <input 
-                        type='text'
-                        placeholder='Digite sua tarefa...'
-                    />
-                    <button type='submit'>
-                        <FiPlus size={25} color='#17181f'/>
-                    </button>
-                </form>
+                <AddTask 
+                    input={input}
+                    onSubmit={handleAddTask}
+                    onChange={handleSearchChange}
+                />
 
                 <h1>Voce tem 2 tarefas !</h1>
 
@@ -74,9 +80,14 @@ export const getServerSideProps: GetServerSideProps = async ({ req }) => {
         }
     }
 
+    const user = {
+        name: session?.user?.name,
+        id: (session as any)?.id
+    }
+
     return {
         props: {
-
+            user
         }
     }
 }
