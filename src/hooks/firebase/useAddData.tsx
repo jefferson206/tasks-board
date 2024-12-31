@@ -1,19 +1,8 @@
+import { AddTaskProps } from "@/models/AddTaskProps"
 import firebase_app from "@/services/firebaseConnection"
 import { addDoc, collection, getDoc, getFirestore } from "firebase/firestore"
 
-interface TaskProps {
-    created: Date
-    task: string
-    userId: string
-    name: string
-}
-
-interface AddDataProps {
-    view: string,
-    taskProps: TaskProps
-}
-
-export async function useAddData({ view, taskProps }: AddDataProps) {
+export async function useAddData({ view, taskProps }: AddTaskProps) {
     const db = getFirestore(firebase_app)
 
     let result = { success: false, docData: null } as any

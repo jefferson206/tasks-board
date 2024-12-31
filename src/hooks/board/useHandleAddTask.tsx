@@ -1,12 +1,13 @@
-import { BoardProps } from "@/pages/board"
 import { FormEvent, useState } from "react"
 import { useAddData } from "../firebase/useAddData"
 import { formatCreatedDate } from "../utils/getFormatedDate"
+import { TaskListProps } from "@/models/TaskListProps"
+import { BoardProps } from "@/models/BoardProps"
 
-export function useHandleAddTask({ user }: BoardProps) {
+export function useHandleAddTask({ user, data }: BoardProps) {
     const [ input, setInput ] = useState('')
     const [ loading, setLoading ] = useState(false)
-    const [ task, setTask ] = useState<any[]>([])
+    const [ tasks, setTasks ] = useState<TaskListProps[]>(JSON.parse(data))
 
     async function handleAddTask(value: FormEvent) {
         value.preventDefault()
@@ -19,7 +20,7 @@ export function useHandleAddTask({ user }: BoardProps) {
                 userId: user.id,
                 name: user.name
             }
-            const { result, loading } = await useAddData({ view: 'task', taskProps })
+            const { result, loading } = await useAddData({ view: 'tasks', taskProps })
             setLoading(loading)
 
             if(!result.success) {
@@ -31,7 +32,7 @@ export function useHandleAddTask({ user }: BoardProps) {
                     ...result.docData,
                     createdFormated: formatCreatedDate(result.docData.created)
                 }
-                setTask([...task, data])
+                setTasks([...tasks, data])
                 console.log('toast: Sucess saved')
             }
         }
@@ -43,5 +44,5 @@ export function useHandleAddTask({ user }: BoardProps) {
         setInput(event.target.value)
     }
 
-    return { input, loading, task, handleAddTask, handleSearchChange}    
+    return { input, loading, tasks, handleAddTask, handleSearchChange}    
 }

@@ -7,16 +7,12 @@ import { getSession } from 'next-auth/react'
 import { AddTask } from '@/components/Board/AddTask'
 import { useHandleAddTask } from '@/hooks/board/useHandleAddTask'
 import Link from 'next/link'
+import { BoardProps } from '@/models/BoardProps'
+import { useGetAllTasks } from '@/hooks/firebase/useGetAllTasks'
+import { CustomSession } from '@/models/CustomSession'
 
-export interface BoardProps {
-    user: {
-        id: string
-        name: string
-    }
-}
-
-export default function Board({ user }: BoardProps) {
-    const { input, loading, task, handleAddTask, handleSearchChange } = useHandleAddTask({ user })
+export default function Board({ user, data }: BoardProps) {
+    const { input, loading, tasks, handleAddTask, handleSearchChange } = useHandleAddTask({ user, data })
     
     return (
         <>
@@ -29,20 +25,20 @@ export default function Board({ user }: BoardProps) {
                     onSubmit={handleAddTask}
                     onChange={handleSearchChange}
                 />
-                <h1>Voce tem {task.length} tarefas !</h1>
+                <h1>Voce tem {tasks.length} tarefa{tasks.length > 1 ? 's' : ''} !</h1>
 
                 <section>
-                    {task.map((t: any) => {
+                    {tasks.map((task: any) => {
                         return (
-                            <article className={styles.taskList}>
-                                <Link href={`/board/${t.id}`}>
-                                    <p>{t.task}</p>
+                            <article className={styles.taskList} key={task.id}>
+                                <Link href={`/board/${task.id}`}>
+                                    <p>{task.task}</p>
                                 </Link>
                                 <div className={styles.actions}>
                                     <div>
                                         <div>
                                             <FiCalendar size={20} color='#ffb800'/>
-                                            <time>{t.createdFormated}</time>
+                                            <time>{task.createdFormated}</time>
                                         </div>
                                         <button>
                                             <FiEdit2 size={20} color='#fff' />
@@ -75,7 +71,7 @@ export default function Board({ user }: BoardProps) {
 
 
 export const getServerSideProps: GetServerSideProps = async ({ req }) => {
-    const session = await getSession({ req }) 
+    const session = await getSession({ req }) as CustomSession
 
     if (!(session as any)?.id) {
         return {
@@ -86,6 +82,8 @@ export const getServerSideProps: GetServerSideProps = async ({ req }) => {
         }
     }
 
+    const { response: data } = await useGetAllTasks({ session })
+
     const user = {
         name: session?.user?.name,
         id: (session as any)?.id
@@ -93,7 +91,8 @@ export const getServerSideProps: GetServerSideProps = async ({ req }) => {
 
     return {
         props: {
-            user
+            user,
+            data
         }
     }
 }
