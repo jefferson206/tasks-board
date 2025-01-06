@@ -1,0 +1,18 @@
+{
+    "Core": {
+        "Loading": "Loading"
+    },
+    "Languages": {
+        "en": "English",
+        "pt": "Portuguese",
+        "es": "Spanish",
+        "it": "Italian",
+        "fr": "French",
+        "de": "German",
+        "ja": "Japanese",
+        "zh-CN": "Chinese",
+        "ru": "Russian",
+        "nl": "Dutch",
+        "pl": "Polish"
+    }
+}

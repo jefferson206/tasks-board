@@ -10,9 +10,14 @@ import Link from 'next/link'
 import { BoardProps } from '@/models/BoardProps'
 import { useGetAllTasks } from '@/hooks/firebase/useGetAllTasks'
 import { CustomSession } from '@/models/CustomSession'
+import LoadingComponent from '@/components/Loading'
 
 export default function Board({ user, data }: BoardProps) {
     const { input, loading, tasks, handleAddTask, handleSearchChange } = useHandleAddTask({ user, data })
+
+    if (loading) {
+        return <LoadingComponent />
+    }
     
     return (
         <>
